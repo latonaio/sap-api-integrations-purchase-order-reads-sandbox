@@ -1,4 +1,4 @@
-package file_reader
+package sap_api_input_reader
 
 type EC_MC struct {
 	ConnectionKey string `json:"connection_key"`
@@ -8,17 +8,17 @@ type EC_MC struct {
 	PurchaseOrder struct {
 		PurchaseOrder             string      `json:"document_no"`
 		Plant                     string      `json:"deliver_to"`
-		OrderQuantity             float64     `json:"quantity"`
-		PickedQuantity            float64     `json:"picked_quantity"`
-		NetPriceAmount            float64     `json:"price"`
+		OrderQuantity             string      `json:"quantity"`
+		PickedQuantity            string      `json:"picked_quantity"`
+		NetPriceAmount            string      `json:"price"`
 	    Batch                     string      `json:"batch"`
 	} `json:"document"`
 	ProductionOrder struct {
 		DocumentNo           string      `json:"document_no"`
 		Status               string      `json:"status"`
 		DeliverTo            string      `json:"deliver_to"`
-		Quantity             float64     `json:"quantity"`
-		CompletedQuantity    float64     `json:"completed_quantity"`
+		Quantity             string      `json:"quantity"`
+		CompletedQuantity    string      `json:"completed_quantity"`
 	    PlannedStartDate     string      `json:"planned_start_date"`
 	    PlannedValidatedDate string      `json:"planned_validated_date"`
 	    ActualStartDate      string      `json:"actual_start_date"`
@@ -26,11 +26,11 @@ type EC_MC struct {
 	    Batch                string      `json:"batch"`
 		Work              struct {
 			WorkNo                   string      `json:"work_no"`
-			Quantity                 float64     `json:"quantity"`
-			CompletedQuantity        float64     `json:"completed_quantity"`
-			ErroredQuantity          float64     `json:"errored_quantity"`
+			Quantity                 string      `json:"quantity"`
+			CompletedQuantity        string      `json:"completed_quantity"`
+			ErroredQuantity          string      `json:"errored_quantity"`
 			Component                string      `json:"component"`
-			PlannedComponentQuantity float64     `json:"planned_component_quantity"`
+			PlannedComponentQuantity string      `json:"planned_component_quantity"`
 			PlannedStartDate         string      `json:"planned_start_date"`
 			PlannedStartTime         string      `json:"planned_start_time"`
 			PlannedValidatedDate     string      `json:"planned_validated_date"`
@@ -44,12 +44,12 @@ type EC_MC struct {
 	APISchema                         string `json:"api_schema"`
 	MaterialCode                      string `json:"material_code"`
 	Supplier                          string `json:"plant/supplier"`
-	Stock                             float64 `json:"stock"`
+	Stock                             string  `json:"stock"`
 	PurchaseOrderType                 string `json:"document_type"`
 	PurchaseOrder                     string `json:"document_no"`
 	ScheduleLineDeliveryDate          string `json:"planned_date"`
 	Validated Date                    string `json:"validated_date"`
-	Deleted                           string `json:"deleted"`
+	Deleted                           bool   `json:"deleted"`
 }
 
 type SDC struct {
@@ -71,7 +71,7 @@ type SDC struct {
 		PurchasingGroup             string      `json:"PurchasingGroup"`
 		PurchaseOrderDate           string      `json:"PurchaseOrderDate"`
 		DocumentCurrency            string      `json:"DocumentCurrency"`
-		ExchangeRate                float64     `json:"ExchangeRate"`
+		ExchangeRate                string      `json:"ExchangeRate"`
 		ValidityStartDate           string      `json:"ValidityStartDate"`
 		ValidityEndDate             string      `json:"ValidityEndDate"`
 		SupplierRespSalesPersonName string      `json:"SupplierRespSalesPersonName"`
@@ -88,39 +88,39 @@ type SDC struct {
 		AddressRegion               string      `json:"AddressRegion"`
 		AddressCountry              string      `json:"AddressCountry"`
 		PurchaseOrderItem           struct {
-			PurchaseOrderItem              int    `json:"PurchaseOrderItem"`
+			PurchaseOrderItem              string `json:"PurchaseOrderItem"`
 			PurchaseOrderItemText          string `json:"PurchaseOrderItemText"`
 			Plant                          string `json:"Plant"`
 			StorageLocation                string `json:"StorageLocation"`
 			MaterialGroup                  string `json:"MaterialGroup"`
 			PurchasingInfoRecord           string `json:"PurchasingInfoRecord"`
 			SupplierMaterialNumber         string `json:"SupplierMaterialNumber"`
-			OrderQuantity                  float64 `json:"OrderQuantity"`
+			OrderQuantity                  string `json:"OrderQuantity"`
 			PurchaseOrderQuantityUnit      string `json:"PurchaseOrderQuantityUnit"`
 			OrderPriceUnit                 string `json:"OrderPriceUnit"`
 			DocumentCurrency               string `json:"DocumentCurrency"`
-			NetPriceAmount                 float64 `json:"NetPriceAmount"`
-			NetPriceQuantity               float64 `json:"NetPriceQuantity"`
+			NetPriceAmount                 string `json:"NetPriceAmount"`
+			NetPriceQuantity               string `json:"NetPriceQuantity"`
 			ScheduleLineDeliveryDate       string `json:"ScheduleLineDeliveryDate"`
 			TaxCode                        string `json:"TaxCode"`
-			OverdelivTolrtdLmtRatioInPct   float64 `json:"OverdelivTolrtdLmtRatioInPct"`
+			OverdelivTolrtdLmtRatioInPct   string `json:"OverdelivTolrtdLmtRatioInPct"`
 			UnlimitedOverdeliveryIsAllowed string `json:"UnlimitedOverdeliveryIsAllowed"`
-			UnderdelivTolrtdLmtRatioInPct  float64 `json:"UnderdelivTolrtdLmtRatioInPct"`
-			IsCompletelyDelivered          string `json:"IsCompletelyDelivered"`
-			IsFinallyInvoiced              string `json:"IsFinallyInvoiced"`
+			UnderdelivTolrtdLmtRatioInPct  string `json:"UnderdelivTolrtdLmtRatioInPct"`
+			IsCompletelyDelivered          bool   `json:"IsCompletelyDelivered"`
+			IsFinallyInvoiced              bool   `json:"IsFinallyInvoiced"`
 			PurchaseOrderItemCategory      string `json:"PurchaseOrderItemCategory"`
 			AccountAssignmentCategory      string `json:"AccountAssignmentCategory"`
-			GoodsReceiptIsExpected         string `json:"GoodsReceiptIsExpected"`
-			GoodsReceiptIsNonValuated      string `json:"GoodsReceiptIsNonValuated"`
-			InvoiceIsExpected              string `json:"InvoiceIsExpected"`
-			InvoiceIsGoodsReceiptBased     string `json:"InvoiceIsGoodsReceiptBased"`
+			GoodsReceiptIsExpected         bool   `json:"GoodsReceiptIsExpected"`
+			GoodsReceiptIsNonValuated      bool   `json:"GoodsReceiptIsNonValuated"`
+			InvoiceIsExpected              bool   `json:"InvoiceIsExpected"`
+			InvoiceIsGoodsReceiptBased     bool   `json:"InvoiceIsGoodsReceiptBased"`
 			Customer                       string `json:"Customer"`
 			SupplierIsSubcontractor        string `json:"SupplierIsSubcontractor"`
-			ItemNetWeight                  float64 `json:"ItemNetWeight"`
+			ItemNetWeight                  string `json:"ItemNetWeight"`
 			ItemWeightUnit                 string `json:"ItemWeightUnit"`
 			IncotermsClassification        string `json:"IncotermsClassification"`
 			PurchaseRequisition            string `json:"PurchaseRequisition"`
-			PurchaseRequisitionItem        int    `json:"PurchaseRequisitionItem"`
+			PurchaseRequisitionItem        string `json:"PurchaseRequisitionItem"`
 			RequisitionerName              string `json:"RequisitionerName"`
 			Material                       string `json:"Material"`
 			InternationalArticleNumber     string `json:"InternationalArticleNumber"`
@@ -131,15 +131,15 @@ type SDC struct {
 			DeliveryAddressCityName        string `json:"DeliveryAddressCityName"`
 			DeliveryAddressRegion          string `json:"DeliveryAddressRegion"`
 			DeliveryAddressCountry         string `json:"DeliveryAddressCountry"`
-			PurchasingDocumentDeletionCode string `json:"PurchasingDocumentDeletionCode"`
+			PurchasingDocumentDeletionCode bool   `json:"PurchasingDocumentDeletionCode"`
 			AccountAssignmentNumber        struct {
-				AccountAssignmentNumber int    `json:"AccountAssignmentNumber"`
+				AccountAssignmentNumber string `json:"AccountAssignmentNumber"`
 				GLAccount               string `json:"GLAccount"`
 				BusinessArea            string `json:"BusinessArea"`
 				CostCenter              string `json:"CostCenter"`
 				SalesOrder              string `json:"SalesOrder"`
-				SalesOrderItem          int    `json:"SalesOrderItem"`
-				SalesOrderScheduleLine  int    `json:"SalesOrderScheduleLine"`
+				SalesOrderItem          string `json:"SalesOrderItem"`
+				SalesOrderScheduleLine  string `json:"SalesOrderScheduleLine"`
 				MasterFixedAsset        string `json:"MasterFixedAsset"`
 				FixedAsset              string `json:"FixedAsset"`
 				GoodsRecipientName      string `json:"GoodsRecipientName"`
@@ -148,16 +148,16 @@ type SDC struct {
 				CostObject              string `json:"CostObject"`
 				OrderID                 string `json:"OrderID"`
 				ProfitCenter            string `json:"ProfitCenter"`
-				WBSElement              int         `json:"WBSElement"`
+				WBSElement              string `json:"WBSElement"`
 				ProjectNetwork          string `json:"ProjectNetwork"`
 				FunctionalArea          string `json:"FunctionalArea"`
 				TaxCode                 string `json:"TaxCode"`
 				CostCtrActivityType     string `json:"CostCtrActivityType"`
-				IsDeleted               string`json:"IsDeleted"`
+				IsDeleted               bool   `json:"IsDeleted"`
 			} `json:"AccountAssignmentNumber"`
 		} `json:"PurchaseOrderItem"`
 	} `json:"PurchaseOrder"`
 	APISchema     string `json:"api_schema"`
 	PurchaseOrder string `json:"purchase_order"`
-	Deleted       string `json:"deleted"`
+	Deleted       bool   `json:"deleted"`
 }
