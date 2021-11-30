@@ -10,7 +10,7 @@ type PurchaseOrder struct {
 	Deleted       bool   `json:"deleted"`
 }    
     
-type PurchaseOrderHeader struct {
+type Header struct {
 	PurchaseOrder               string      `json:"PurchaseOrder"`
 	CompanyCode                 string      `json:"CompanyCode"`
 	PurchaseOrderType           string      `json:"PurchaseOrderType"`
@@ -42,7 +42,7 @@ type PurchaseOrderHeader struct {
     AddressCountry              string      `json:"AddressCountry"`
 }
 
-type PurchaseOrderItem           struct {
+type Item struct {
 	PurchaseOrder                  string `json:"PurchaseOrder"`
     PurchaseOrderItem              string `json:"PurchaseOrderItem"`
     PurchaseOrderItemText          string `json:"PurchaseOrderItemText"`
@@ -90,7 +90,7 @@ type PurchaseOrderItem           struct {
     PurchasingDocumentDeletionCode bool   `json:"PurchasingDocumentDeletionCode"`
 }
 
-type AccountAssignmentNumber        struct {
+type Account struct {
 	PurchaseOrder                  string `json:"PurchaseOrder"`
     PurchaseOrderItem              string `json:"PurchaseOrderItem"`
     AccountAssignmentNumber        string `json:"AccountAssignmentNumber"`

@@ -28,13 +28,17 @@ func NewSAPAPICaller(baseUrl string, l *logger.Logger) *SAPAPICaller {
 func (c *SAPAPICaller) AsyncGetPurchaseOrder(PurchaseOrder, PurchaseOrderItem, PurchaseRequisition, PurchaseRequisitionItem string) {
 	wg := &sync.WaitGroup{}
 
-	wg.Add(3)
+	wg.Add(4)
 	go func() {
 		c.Header(PurchaseOrder)
 		wg.Done()
 	}()
 	go func() {
 		c.Item(PurchaseOrder, PurchaseOrderItem)
+		wg.Done()
+	}()
+	go func() {
+		c.Account(PurchaseOrder, PurchaseOrderItem)
 		wg.Done()
 	}()
 	go func() {
@@ -56,7 +60,18 @@ func (c *SAPAPICaller) Header(PurchaseOrder string) {
 }
 
 func (c *SAPAPICaller) Item(PurchaseOrder, PurchaseOrderItem string) {
-	res, err := c.callPurchaseOrderSrvAPIRequirementItem("A_PurchaseOrder('{PurchaseOrder}')/to_PurchaseOrderItem", PurchaseOrder, PurchaseOrderItem)
+	res, err := c.callPurchaseOrderSrvAPIRequirementItem("A_PurchaseOrderItem", PurchaseOrder, PurchaseOrderItem)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+
+	c.log.Info(res)
+
+}
+
+func (c *SAPAPICaller) Account(PurchaseOrder, PurchaseOrderItem string) {
+	res, err := c.callPurchaseOrderSrvAPIRequirementAccount("A_PurOrdAccountAssignment", PurchaseOrder, PurchaseOrderItem)
 	if err != nil {
 		c.log.Error(err)
 		return
@@ -67,7 +82,7 @@ func (c *SAPAPICaller) Item(PurchaseOrder, PurchaseOrderItem string) {
 }
 
 func (c *SAPAPICaller) PurchaseRequisition(PurchaseRequisition, PurchaseRequisitionItem string) {
-	res, err := c.callPurchaseOrderSrvAPIRequirementPurchaseRequisition("A_PurchaseOrder('{PurchaseOrder}')/to_PurchaseOrderItem", PurchaseRequisition, PurchaseRequisitionItem)
+	res, err := c.callPurchaseOrderSrvAPIRequirementPurchaseRequisition("A_PurchaseOrderItem", PurchaseRequisition, PurchaseRequisitionItem)
 	if err != nil {
 		c.log.Error(err)
 		return
@@ -101,6 +116,29 @@ func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementHeader(api, PurchaseOrd
 }
 
 func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementItem(api, PurchaseOrder, PurchaseOrderItem string) ([]byte, error) {
+	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
+	req, _ := http.NewRequest("GET", url, nil)
+
+	params := req.URL.Query()
+	// params.Add("$select", "PurchaseOrder, PurchaseOrderItem")
+	params.Add("$filter", fmt.Sprintf("PurchaseOrder eq '%s' and PurchaseOrderItem eq '%s'", PurchaseOrder, PurchaseOrderItem))
+	req.URL.RawQuery = params.Encode()
+
+	req.Header.Set("APIKey", c.apiKey)
+	req.Header.Set("Accept", "application/json")
+
+	client := new(http.Client)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	return byteArray, nil
+}
+
+func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementAccount(api, PurchaseOrder, PurchaseOrderItem string) ([]byte, error) {
 	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
