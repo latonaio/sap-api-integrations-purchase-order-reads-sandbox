@@ -1,0 +1,7 @@
+{
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-purchase-order-reads/SAP_API_Caller/caller.go#L58",
+	"function": "sap-api-integrations-purchase-order-reads/SAP_API_Caller.(*SAPAPICaller).Header",
+	"level": "INFO",
+	"message": "&{PurchaseOrder:4500000011 CompanyCode:1710 PurchaseOrderType:NB PurchasingProcessingStatus:05 CreationDate:/Date(1470700800000)/ LastChangeDateTime:/Date(1629367350386+0000)/ Supplier:17300001 Language:EN PaymentTerms:0004 PurchasingOrganization:1710 PurchasingGroup:001 PurchaseOrderDate:/Date(1470700800000)/ DocumentCurrency:USD ExchangeRate:1.00000 ValidityStartDate: ValidityEndDate: SupplierRespSalesPersonName: SupplierPhoneNumber: SupplyingPlant: IncotermsClassification: ManualSupplierAddressID: AddressName:Domestic US Supplier 10 AddressCityName:Muncie AddressFaxNumber: AddressPostalCode:47305-2757 AddressStreetName:S Ohio Ave AddressPhoneNumber:999 856 4321 AddressRegion:IN AddressCountry:US}",
+	"time": "2021-12-07T20:09:36.965369+09:00"
+}

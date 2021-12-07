@@ -46,10 +46,10 @@ type EC_MC struct {
 	Supplier                          string `json:"plant/supplier"`
 	Stock                             string  `json:"stock"`
 	PurchaseOrderType                 string `json:"document_type"`
-	PurchaseOrder                     string `json:"document_no"`
+	PONumber                          string `json:"document_no"`
 	ScheduleLineDeliveryDate          string `json:"planned_date"`
-	Validated Date                    string `json:"validated_date"`
-	Deleted                           bool   `json:"deleted"`
+	ValidatedDate                     string `json:"validated_date"`
+    Deleted                           bool   `json:"deleted"`
 }
 
 type SDC struct {
@@ -101,10 +101,9 @@ type SDC struct {
 			DocumentCurrency               string `json:"DocumentCurrency"`
 			NetPriceAmount                 string `json:"NetPriceAmount"`
 			NetPriceQuantity               string `json:"NetPriceQuantity"`
-			ScheduleLineDeliveryDate       string `json:"ScheduleLineDeliveryDate"`
 			TaxCode                        string `json:"TaxCode"`
 			OverdelivTolrtdLmtRatioInPct   string `json:"OverdelivTolrtdLmtRatioInPct"`
-			UnlimitedOverdeliveryIsAllowed string `json:"UnlimitedOverdeliveryIsAllowed"`
+			UnlimitedOverdeliveryIsAllowed bool   `json:"UnlimitedOverdeliveryIsAllowed"`
 			UnderdelivTolrtdLmtRatioInPct  string `json:"UnderdelivTolrtdLmtRatioInPct"`
 			IsCompletelyDelivered          bool   `json:"IsCompletelyDelivered"`
 			IsFinallyInvoiced              bool   `json:"IsFinallyInvoiced"`
@@ -115,7 +114,7 @@ type SDC struct {
 			InvoiceIsExpected              bool   `json:"InvoiceIsExpected"`
 			InvoiceIsGoodsReceiptBased     bool   `json:"InvoiceIsGoodsReceiptBased"`
 			Customer                       string `json:"Customer"`
-			SupplierIsSubcontractor        string `json:"SupplierIsSubcontractor"`
+			SupplierIsSubcontractor        bool   `json:"SupplierIsSubcontractor"`
 			ItemNetWeight                  string `json:"ItemNetWeight"`
 			ItemWeightUnit                 string `json:"ItemWeightUnit"`
 			IncotermsClassification        string `json:"IncotermsClassification"`
@@ -131,8 +130,8 @@ type SDC struct {
 			DeliveryAddressCityName        string `json:"DeliveryAddressCityName"`
 			DeliveryAddressRegion          string `json:"DeliveryAddressRegion"`
 			DeliveryAddressCountry         string `json:"DeliveryAddressCountry"`
-			PurchasingDocumentDeletionCode bool   `json:"PurchasingDocumentDeletionCode"`
-			AccountAssignmentNumber        struct {
+			PurchasingDocumentDeletionCode string `json:"PurchasingDocumentDeletionCode"`
+			Account                     struct {
 				AccountAssignmentNumber string `json:"AccountAssignmentNumber"`
 				GLAccount               string `json:"GLAccount"`
 				BusinessArea            string `json:"BusinessArea"`
@@ -155,9 +154,21 @@ type SDC struct {
 				CostCtrActivityType     string `json:"CostCtrActivityType"`
 				IsDeleted               bool   `json:"IsDeleted"`
 			} `json:"AccountAssignmentNumber"`
+			ScheduleLine struct {
+                PurchasingDocumentItem        string `json:"PurchasingDocumentItem"`
+                ScheduleLine                  string `json:"ScheduleLine"`
+				DelivDateCategory             string `json:"DelivDateCategory"`
+				ScheduleLineDeliveryDate      string `json:"ScheduleLineDeliveryDate"`
+				PurchaseOrderQuantityUnit     string `json:"PurchaseOrderQuantityUnit"`
+				ScheduleLineOrderQuantity     string `json:"ScheduleLineOrderQuantity"`
+				ScheduleLineDeliveryTime      string `json:"ScheduleLineDeliveryTime"`
+				PurchaseRequisition           string `json:"PurchaseRequisition"`
+				PurchaseRequisitionItem       string `json:"PurchaseRequisitionItem"`
+				ScheduleLineCommittedQuantity string `json:"ScheduleLineCommittedQuantity"`
+			} `json:"ScheduleLine"`
 		} `json:"PurchaseOrderItem"`
 	} `json:"PurchaseOrder"`
-	APISchema     string `json:"api_schema"`
-	PONumber      string `json:"purchase_order"`
-	Deleted       bool   `json:"deleted"`
+	APISchema               string `json:"api_schema"`
+	PurchasingDocument      string `json:"purchase_order"`
+	Deleted                 bool   `json:"deleted"`
 }

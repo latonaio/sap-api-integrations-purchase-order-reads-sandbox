@@ -37,3 +37,5 @@ sap-api-integrations-purchase-order-reads において、API への値入力条�
 * inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseOrderItem（購買発注明細）
 * inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisition（購買依頼）
 * inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisitionItem（購買依頼明細）
+* inoutSDC.PurchasingDocument（購買伝票 ※購買発注の納入日程行のAPIをコールするときに購買発注ではなく購買伝票としての項目値が必要です。通常は、購買伝票の値＝購買発注の値、となります）
+* inoutSDC.PurchaseOrder.PurchaseOrderItem.ScheduleLine.PurchasingDocumentItem（購買伝票明細  ※購買発注の納入日程行のAPIをコールするときに購買発注明細ではなく購買伝票明細としての項目値が必要です。通常は、購買伝票明細の値＝購買発注明細の値、となります）

@@ -1,4 +1,4 @@
-module sap-api-integrations-purchase-order-reads 
+module sap-api-integrations-purchase-order-reads
 
 go 1.17
 

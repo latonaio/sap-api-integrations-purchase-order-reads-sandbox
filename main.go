@@ -10,15 +10,17 @@ import (
 func main() {
 	l := logger.NewLogger()
 	fr := sap_api_input_reader.NewFileReader()
-	inoutSDC := fr.ReadSDC("./Inputs//SDC_Purchase_Order_sample.json")
+	inoutSDC := fr.ReadSDC("./Inputs/SDC_Purchase_Order_sample2.json")
 	caller := sap_api_caller.NewSAPAPICaller(
 		"https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/", l,
 	)
 
-    caller.AsyncGetPurchaseOrder(
-        inoutSDC.PurchaseOrder.PurchaseOrder,
-        inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseOrderItem,
-        inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisition,
-        inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisitionItem,
-    )
+	caller.AsyncGetPurchaseOrder(
+		inoutSDC.PurchaseOrder.PurchaseOrder,
+		inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseOrderItem,
+		inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisition,
+		inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisitionItem,
+		inoutSDC.PurchasingDocument,
+		inoutSDC.PurchaseOrder.PurchaseOrderItem.ScheduleLine.PurchasingDocumentItem,
+	)
 }

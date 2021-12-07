@@ -22,10 +22,9 @@ type Item struct {
 			DocumentCurrency               string `json:"DocumentCurrency"`
 			NetPriceAmount                 string `json:"NetPriceAmount"`
 			NetPriceQuantity               string `json:"NetPriceQuantity"`
-			ScheduleLineDeliveryDate       string `json:"ScheduleLineDeliveryDate"`
 			TaxCode                        string `json:"TaxCode"`
 			OverdelivTolrtdLmtRatioInPct   string `json:"OverdelivTolrtdLmtRatioInPct"`
-			UnlimitedOverdeliveryIsAllowed string `json:"UnlimitedOverdeliveryIsAllowed"`
+			UnlimitedOverdeliveryIsAllowed bool   `json:"UnlimitedOverdeliveryIsAllowed"`
 			UnderdelivTolrtdLmtRatioInPct  string `json:"UnderdelivTolrtdLmtRatioInPct"`
 			IsCompletelyDelivered          bool   `json:"IsCompletelyDelivered"`
 			IsFinallyInvoiced              bool   `json:"IsFinallyInvoiced"`
@@ -36,7 +35,7 @@ type Item struct {
 			InvoiceIsExpected              bool   `json:"InvoiceIsExpected"`
 			InvoiceIsGoodsReceiptBased     bool   `json:"InvoiceIsGoodsReceiptBased"`
 			Customer                       string `json:"Customer"`
-			SupplierIsSubcontractor        string `json:"SupplierIsSubcontractor"`
+			SupplierIsSubcontractor        bool   `json:"SupplierIsSubcontractor"`
 			ItemNetWeight                  string `json:"ItemNetWeight"`
 			ItemWeightUnit                 string `json:"ItemWeightUnit"`
 			IncotermsClassification        string `json:"IncotermsClassification"`
@@ -52,7 +51,7 @@ type Item struct {
 			DeliveryAddressCityName        string `json:"DeliveryAddressCityName"`
 			DeliveryAddressRegion          string `json:"DeliveryAddressRegion"`
 			DeliveryAddressCountry         string `json:"DeliveryAddressCountry"`
-			PurchasingDocumentDeletionCode bool   `json:"PurchasingDocumentDeletionCode"`
+			PurchasingDocumentDeletionCode string `json:"PurchasingDocumentDeletionCode"`
 		} `json:"results"`
 	} `json:"d"`
 }
