@@ -27,6 +27,7 @@ sap-api-integrations-purchase-order-reads には、次の API をコールする
 * A_PurchaseOrder（購買発注 - ヘッダ）
 * A_PurchaseOrderItem（購買発注 - 明細）
 * A_PurOrdAccountAssignment（購買発注 - 勘定設定）
+* A_PurchaseOrderScheduleLine（購買発注 - 納入日程行）
 
 ## API への 値入力条件 の 初期値
 sap-api-integrations-purchase-order-reads において、API への値入力条件の初期値は、入力ファイルレイアウトの種別毎に、次の通りとなっています。  
