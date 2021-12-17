@@ -1,5 +1,5 @@
 # sap-api-integrations-purchase-order-reads
-sap-api-integrations-purchase-order-reads は、外部システム(特にエッジコンピューティング環境)をSAPと統合することを目的に、SAP API で 購買発注データを取得するマイクロサービスです。    
+sap-api-integrations-purchase-order-reads は、外部システム(特にエッジコンピューティング環境)をSAPと統合することを目的に、SAP API で 購買受注データを取得するマイクロサービスです。    
 sap-api-integrations-purchase-order-reads には、サンプルのAPI Json フォーマットが含まれています。   
 sap-api-integrations-purchase-order-reads は、オンプレミス版である（＝クラウド版ではない）SAPS4HANA API の利用を前提としています。クラウド版APIを利用する場合は、ご注意ください。   
 https://api.sap.com/api/OP_API_PURCHASEORDER_PROCESS_SRV_0001/overview   
@@ -40,3 +40,76 @@ sap-api-integrations-purchase-order-reads において、API への値入力条�
 * inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisitionItem（購買依頼明細）
 * inoutSDC.PurchasingDocument（購買伝票 ※購買発注の納入日程行のAPIをコールするときに購買発注ではなく購買伝票としての項目値が必要です。通常は、購買伝票の値＝購買発注の値、となります）
 * inoutSDC.PurchaseOrder.PurchaseOrderItem.ScheduleLine.PurchasingDocumentItem（購買伝票明細  ※購買発注の納入日程行のAPIをコールするときに購買発注明細ではなく購買伝票明細としての項目値が必要です。通常は、購買伝票明細の値＝購買発注明細の値、となります）
+
+## SAP API Bussiness Hub の API の選択的コール
+
+Latona および AION の SAP 関連リソースでは、Inputs フォルダ下の sample.json の accepter に取得したいデータの種別（＝APIの種別）を入力し、指定することができます。  
+なお、同 accepter にAll(もしくは空白)の値を入力することで、全データ（＝全APIの種別）をまとめて取得することができます。  
+
+* sample.jsonの記載例(1)  
+
+accepter において 下記の例のように、データの種別（＝APIの種別）を指定します。  
+ここでは、"Account" が指定されています。    
+  
+```
+	"api_schema": "/sap.s4.beh.purchaseorder.v1.PurchaseOrder.Created.v1",
+	"accepter": ["Header","Item"],
+	"purchase_order": "4500000001",
+	"deleted": false
+```
+  
+* 全データを取得する際のsample.jsonの記載例(2)  
+
+全データを取得する場合、sample.json は以下のように記載します。  
+
+```
+	"api_schema": "/sap.s4.beh.purchaseorder.v1.PurchaseOrder.Created.v1",
+	"accepter": ["All"],
+	"purchase_order": "4500000001",
+	"deleted": false
+```
+## 指定されたデータ種別のコール
+
+accepter における データ種別 の指定に基づいて SAP_API_Caller 内の caller.go で API がコールされます。  
+caller.go の func() 毎 の 以下の箇所が、指定された API をコールするソースコードです。  
+
+```
+func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, purchaseRequisition, purchaseRequisitionItem, purchasingDocument, purchasingDocumentItem string, accepter []string) {
+	wg := &sync.WaitGroup{}
+	wg.Add(len(accepter))
+	for _, fn := range accepter {
+		switch fn {
+		case "Header":
+			func() {
+				c.Header(purchaseOrder)
+				wg.Done()
+			}()
+		case "Item":
+			func() {
+				c.Item(purchaseOrder, purchaseOrderItem)
+				wg.Done()
+			}()
+		case "Account":
+			func() {
+				c.Account(purchaseOrder, purchaseOrderItem)
+				wg.Done()
+			}()
+		case "PurchaseRequisition":
+			func() {
+				c.PurchaseRequisition(purchaseRequisition, purchaseRequisitionItem)
+				wg.Done()
+			}()
+		case "ScheduleLine":
+			func() {
+				c.ScheduleLine(purchasingDocument, purchasingDocumentItem)
+				wg.Done()
+			}()
+		default:
+			wg.Done()
+		}
+	}
+
+	wg.Wait()
+}
+```
+

@@ -169,6 +169,7 @@ type SDC struct {
 		} `json:"PurchaseOrderItem"`
 	} `json:"PurchaseOrder"`
 	APISchema               string `json:"api_schema"`
+	Accepter              []string `json:"accepter"`
 	PurchasingDocument      string `json:"purchase_order"`
 	Deleted                 bool   `json:"deleted"`
 }

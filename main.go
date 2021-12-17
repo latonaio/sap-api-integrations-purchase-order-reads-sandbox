@@ -10,10 +10,18 @@ import (
 func main() {
 	l := logger.NewLogger()
 	fr := sap_api_input_reader.NewFileReader()
-	inoutSDC := fr.ReadSDC("./Inputs/SDC_Purchase_Order_sample2.json")
+	inoutSDC := fr.ReadSDC("./Inputs/SDC_Purchase_Order_Schedule_Line_sample.json")
 	caller := sap_api_caller.NewSAPAPICaller(
 		"https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/", l,
 	)
+
+	accepter := inoutSDC.Accepter
+	if len(accepter) == 0 || accepter[0] == "All" {
+		accepter = []string{
+			"Header", "Item", "Account", "PurchaseRequisition",
+			"ScheduleLine",
+		}
+	}
 
 	caller.AsyncGetPurchaseOrder(
 		inoutSDC.PurchaseOrder.PurchaseOrder,
@@ -22,5 +30,6 @@ func main() {
 		inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisitionItem,
 		inoutSDC.PurchasingDocument,
 		inoutSDC.PurchaseOrder.PurchaseOrderItem.ScheduleLine.PurchasingDocumentItem,
+		accepter,
 	)
 }

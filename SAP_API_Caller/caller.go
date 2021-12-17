@@ -26,30 +26,41 @@ func NewSAPAPICaller(baseUrl string, l *logger.Logger) *SAPAPICaller {
 	}
 }
 
-func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, purchaseRequisition, purchaseRequisitionItem, purchasingDocument, purchasingDocumentItem string) {
+func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, purchaseRequisition, purchaseRequisitionItem, purchasingDocument, purchasingDocumentItem string, accepter []string) {
 	wg := &sync.WaitGroup{}
+	wg.Add(len(accepter))
+	for _, fn := range accepter {
+		switch fn {
+		case "Header":
+			func() {
+				c.Header(purchaseOrder)
+				wg.Done()
+			}()
+		case "Item":
+			func() {
+				c.Item(purchaseOrder, purchaseOrderItem)
+				wg.Done()
+			}()
+		case "Account":
+			func() {
+				c.Account(purchaseOrder, purchaseOrderItem)
+				wg.Done()
+			}()
+		case "PurchaseRequisition":
+			func() {
+				c.PurchaseRequisition(purchaseRequisition, purchaseRequisitionItem)
+				wg.Done()
+			}()
+		case "ScheduleLine":
+			func() {
+				c.ScheduleLine(purchasingDocument, purchasingDocumentItem)
+				wg.Done()
+			}()
+		default:
+			wg.Done()
+		}
+	}
 
-	wg.Add(5)
-	func() {
-		c.Header(purchaseOrder)
-		wg.Done()
-	}()
-	func() {
-		c.Item(purchaseOrder, purchaseOrderItem)
-		wg.Done()
-	}()
-	func() {
-		c.Account(purchaseOrder, purchaseOrderItem)
-		wg.Done()
-	}()
-	func() {
-		c.PurchaseRequisition(purchaseRequisition, purchaseRequisitionItem)
-		wg.Done()
-	}()
-	func() {
-		c.ScheduleLine(purchasingDocument, purchasingDocumentItem)
-		wg.Done()
-	}()
 	wg.Wait()
 }
 

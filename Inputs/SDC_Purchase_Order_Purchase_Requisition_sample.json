@@ -34,7 +34,7 @@
 		"AddressRegion": "",
 		"AddressCountry": "",
 		"PurchaseOrderItem": {
-			"PurchaseOrderItem": "",
+			"PurchaseOrderItem": "11",
 			"PurchaseOrderItemText": "",
 			"Plant": "",
 			"StorageLocation": "",
@@ -64,8 +64,8 @@
 			"ItemNetWeight": "",
 			"ItemWeightUnit": "",
 			"IncotermsClassification": "",
-			"PurchaseRequisition": "10000013",
-			"PurchaseRequisitionItem": "10",
+			"PurchaseRequisition": "",
+			"PurchaseRequisitionItem": "",
 			"RequisitionerName": "",
 			"Material": "",
 			"InternationalArticleNumber": "",
@@ -109,12 +109,13 @@
 				"ScheduleLineOrderQuantity": "",
 				"ScheduleLineDeliveryTime": "",
 				"PurchaseRequisition": "",
-				"PurchaseRequisitionItem": "",
+				"PurchaseRequisitionItem": "0",
 				"ScheduleLineCommittedQuantity": ""
 			}
 		}
 	},
 	"api_schema": "/sap.s4.beh.purchaseorder.v1.PurchaseOrder.Created.v1",
+	"accepter": ["All"],
 	"purchase_order": "",
 	"deleted": false
 }
