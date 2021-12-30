@@ -24,10 +24,18 @@ sap-api-integrations-purchase-order-reads が対応する APIサービス は、
 ## 本レポジトリ に 含まれる API名
 sap-api-integrations-purchase-order-reads には、次の API をコールするためのリソースが含まれています。  
 
-* A_PurchaseOrder（購買発注 - ヘッダ）
-* A_PurchaseOrderItem（購買発注 - 明細）
-* A_PurOrdAccountAssignment（購買発注 - 勘定設定）
+* A_PurchaseOrder（購買発注 - ヘッダ）※購買発注関連データを取得するために、ToItem、ToItemScheduleLine、ToItemPricingElement、ToItemPricingAccountと合わせて利用されます。  
+* ToItem（購買発注 - 明細）
+* ToItemScheduleLine（購買発注 - 納入日程行）
+* ToItemPricingElement（購買発注 - 価格条件）
+* ToItemAccount（購買発注 - 勘定設定）
+* A_PurchaseOrderItem（購買発注 - 明細）※購買発注関連データを取得するために、ToItemScheduleLine、ToItemPricingElement、ToItemPricingElementと合わせて利用されます。  
+* ToItemScheduleLine（購買発注 - 納入日程行）
+* ToItemPricingElement（購買発注 - 価格条件）
+* ToItemAccount（購買発注 - 勘定設定）
 * A_PurchaseOrderScheduleLine（購買発注 - 納入日程行）
+* A_PurOrdPricingElement（購買発注 - 価格条件）
+* A_PurOrdAccountAssignment（購買発注 - 勘定設定）
 
 ## API への 値入力条件 の 初期値
 sap-api-integrations-purchase-order-reads において、API への値入力条件の初期値は、入力ファイルレイアウトの種別毎に、次の通りとなっています。  
@@ -36,10 +44,10 @@ sap-api-integrations-purchase-order-reads において、API への値入力条�
 
 * inoutSDC.PurchaseOrder.PurchaseOrder（購買発注）
 * inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseOrderItem（購買発注明細）
+* inoutSDC.PurchaseOrder.PurchaseOrderItem.ItemScheduleLine.PurchasingDocument（購買伝票 ※購買発注の納入日程行のAPIをコールするときに購買発注ではなく購買伝票としての項目値が必要です。通常は、購買伝票の値＝購買発注の値、となります）
+* inoutSDC.PurchaseOrder.PurchaseOrderItem.ItemScheduleLine.PurchasingDocumentItem（購買伝票明細 ※購買発注の納入日程行のAPIをコールするときに購買発注明細ではなく購買伝票明細としての項目値が必要です。通常は、購買伝票明細の値＝購買発注明細の値、となります）
 * inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisition（購買依頼）
 * inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisitionItem（購買依頼明細）
-* inoutSDC.PurchasingDocument（購買伝票 ※購買発注の納入日程行のAPIをコールするときに購買発注ではなく購買伝票としての項目値が必要です。通常は、購買伝票の値＝購買発注の値、となります）
-* inoutSDC.PurchaseOrder.PurchaseOrderItem.ScheduleLine.PurchasingDocumentItem（購買伝票明細  ※購買発注の納入日程行のAPIをコールするときに購買発注明細ではなく購買伝票明細としての項目値が必要です。通常は、購買伝票明細の値＝購買発注明細の値、となります）
 
 ## SAP API Bussiness Hub の API の選択的コール
 
@@ -49,12 +57,12 @@ Latona および AION の SAP 関連リソースでは、Inputs フォルダ下�
 * sample.jsonの記載例(1)  
 
 accepter において 下記の例のように、データの種別（＝APIの種別）を指定します。  
-ここでは、"Account" が指定されています。    
+ここでは、"Header" が指定されています。    
   
 ```
-	"api_schema": "/sap.s4.beh.purchaseorder.v1.PurchaseOrder.Created.v1",
-	"accepter": ["Header","Item"],
-	"purchase_order": "4500000001",
+	"api_schema": "sap.s4.beh.purchaseorder.v1.PurchaseOrder.Created.v1",
+	"accepter": ["Header"],
+	"purchase_order": "4500000028",
 	"deleted": false
 ```
   
@@ -63,9 +71,9 @@ accepter において 下記の例のように、データの種別（＝APIの�
 全データを取得する場合、sample.json は以下のように記載します。  
 
 ```
-	"api_schema": "/sap.s4.beh.purchaseorder.v1.PurchaseOrder.Created.v1",
+	"api_schema": "sap.s4.beh.purchaseorder.v1.PurchaseOrder.Created.v1",
 	"accepter": ["All"],
-	"purchase_order": "4500000001",
+	"purchase_order": "4500000028",
 	"deleted": false
 ```
 ## 指定されたデータ種別のコール
@@ -74,7 +82,7 @@ accepter における データ種別 の指定に基づいて SAP_API_Caller �
 caller.go の func() 毎 の 以下の箇所が、指定された API をコールするソースコードです。  
 
 ```
-func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, purchaseRequisition, purchaseRequisitionItem, purchasingDocument, purchasingDocumentItem string, accepter []string) {
+func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, purchasingDocument, purchasingDocumentItem, purchaseRequisition, purchaseRequisitionItem string, accepter []string) {
 	wg := &sync.WaitGroup{}
 	wg.Add(len(accepter))
 	for _, fn := range accepter {
@@ -89,19 +97,24 @@ func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, p
 				c.Item(purchaseOrder, purchaseOrderItem)
 				wg.Done()
 			}()
-		case "Account":
+		case "ItemScheduleLine":
 			func() {
-				c.Account(purchaseOrder, purchaseOrderItem)
+				c.ItemScheduleLine(purchasingDocument, purchasingDocumentItem)
+				wg.Done()
+			}()
+		case "ItemPricingElement":
+			func() {
+				c.ItemPricingElement(purchaseOrder, purchaseOrderItem)
+				wg.Done()
+			}()
+		case "ItemAccount":
+			func() {
+				c.ItemAccount(purchaseOrder, purchaseOrderItem)
 				wg.Done()
 			}()
 		case "PurchaseRequisition":
 			func() {
 				c.PurchaseRequisition(purchaseRequisition, purchaseRequisitionItem)
-				wg.Done()
-			}()
-		case "ScheduleLine":
-			func() {
-				c.ScheduleLine(purchasingDocument, purchasingDocumentItem)
 				wg.Done()
 			}()
 		default:
@@ -120,10 +133,43 @@ func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, p
 
 ```
 {
-	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-purchase-order-reads/SAP_API_Caller/caller.go#L58",
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-purchase-order-reads/SAP_API_Caller/caller.go#L78",
 	"function": "sap-api-integrations-purchase-order-reads/SAP_API_Caller.(*SAPAPICaller).Header",
 	"level": "INFO",
-	"message": "&{PurchaseOrder:4500000011 CompanyCode:1710 PurchaseOrderType:NB PurchasingProcessingStatus:05 CreationDate:/Date(1470700800000)/ LastChangeDateTime:/Date(1629367350386+0000)/ Supplier:17300001 Language:EN PaymentTerms:0004 PurchasingOrganization:1710 PurchasingGroup:001 PurchaseOrderDate:/Date(1470700800000)/ DocumentCurrency:USD ExchangeRate:1.00000 ValidityStartDate: ValidityEndDate: SupplierRespSalesPersonName: SupplierPhoneNumber: SupplyingPlant: IncotermsClassification: ManualSupplierAddressID: AddressName:Domestic US Supplier 10 AddressCityName:Muncie AddressFaxNumber: AddressPostalCode:47305-2757 AddressStreetName:S Ohio Ave AddressPhoneNumber:999 856 4321 AddressRegion:IN AddressCountry:US}",
-	"time": "2021-12-07T20:09:36.965369+09:00"
+	"message": [
+		{
+			"PurchaseOrder": "4500000028",
+			"CompanyCode": "1710",
+			"PurchaseOrderType": "NB",
+			"PurchasingProcessingStatus": "02",
+			"CreationDate": "/Date(1473638400000)/",
+			"LastChangeDateTime": "",
+			"Supplier": "17300001",
+			"Language": "EN",
+			"PaymentTerms": "0004",
+			"PurchasingOrganization": "1710",
+			"PurchasingGroup": "001",
+			"PurchaseOrderDate": "/Date(1473638400000)/",
+			"DocumentCurrency": "USD",
+			"ExchangeRate": "1.00000",
+			"ValidityStartDate": "",
+			"ValidityEndDate": "",
+			"SupplierRespSalesPersonName": "",
+			"SupplierPhoneNumber": "",
+			"SupplyingPlant": "",
+			"IncotermsClassification": "",
+			"ManualSupplierAddressID": "",
+			"AddressName": "Domestic US Supplier 10",
+			"AddressCityName": "Muncie",
+			"AddressFaxNumber": "",
+			"AddressPostalCode": "47305-2757",
+			"AddressStreetName": "S Ohio Ave",
+			"AddressPhoneNumber": "999 856 4321",
+			"AddressRegion": "IN",
+			"AddressCountry": "US",
+			"to_PurchaseOrderItem": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_PURCHASEORDER_PROCESS_SRV/A_PurchaseOrder('4500000028')/to_PurchaseOrderItem"
+		}
+	],
+	"time": "2021-12-30T10:55:15.244415+09:00"
 }
 ```

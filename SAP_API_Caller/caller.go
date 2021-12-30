@@ -26,7 +26,7 @@ func NewSAPAPICaller(baseUrl string, l *logger.Logger) *SAPAPICaller {
 	}
 }
 
-func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, purchaseRequisition, purchaseRequisitionItem, purchasingDocument, purchasingDocumentItem string, accepter []string) {
+func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, purchasingDocument, purchasingDocumentItem, purchaseRequisition, purchaseRequisitionItem string, accepter []string) {
 	wg := &sync.WaitGroup{}
 	wg.Add(len(accepter))
 	for _, fn := range accepter {
@@ -41,19 +41,24 @@ func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, p
 				c.Item(purchaseOrder, purchaseOrderItem)
 				wg.Done()
 			}()
-		case "Account":
+		case "ItemScheduleLine":
 			func() {
-				c.Account(purchaseOrder, purchaseOrderItem)
+				c.ItemScheduleLine(purchasingDocument, purchasingDocumentItem)
+				wg.Done()
+			}()
+		case "ItemPricingElement":
+			func() {
+				c.ItemPricingElement(purchaseOrder, purchaseOrderItem)
+				wg.Done()
+			}()
+		case "ItemAccount":
+			func() {
+				c.ItemAccount(purchaseOrder, purchaseOrderItem)
 				wg.Done()
 			}()
 		case "PurchaseRequisition":
 			func() {
 				c.PurchaseRequisition(purchaseRequisition, purchaseRequisitionItem)
-				wg.Done()
-			}()
-		case "ScheduleLine":
-			func() {
-				c.ScheduleLine(purchasingDocument, purchasingDocumentItem)
 				wg.Done()
 			}()
 		default:
@@ -65,15 +70,43 @@ func (c *SAPAPICaller) AsyncGetPurchaseOrder(purchaseOrder, purchaseOrderItem, p
 }
 
 func (c *SAPAPICaller) Header(purchaseOrder string) {
-	data, err := c.callPurchaseOrderSrvAPIRequirementHeader("A_PurchaseOrder", purchaseOrder)
+	headerData, err := c.callPurchaseOrderSrvAPIRequirementHeader("A_PurchaseOrder", purchaseOrder)
 	if err != nil {
 		c.log.Error(err)
 		return
 	}
-	c.log.Info(data)
+	c.log.Info(headerData)
+	itemData, err := c.callToItem(headerData[0].ToItem)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(itemData)
+
+	itemScheduleLineData, err := c.callToItemScheduleLine(itemData[0].ToItemScheduleLine)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(itemScheduleLineData)
+
+	itemPricingElementData, err := c.callToItemPricingElement(itemData[0].ToItemPricingElement)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(itemPricingElementData)
+
+	itemAccountData, err := c.callToItemAccount(itemData[0].ToItemAccount)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(itemAccountData)
+
 }
 
-func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementHeader(api, purchaseOrder string) (*sap_api_output_formatter.Header, error) {
+func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementHeader(api, purchaseOrder string) ([]sap_api_output_formatter.Header, error) {
 	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -94,16 +127,110 @@ func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementHeader(api, purchaseOrd
 	return data, nil
 }
 
+func (c *SAPAPICaller) callToItem(url string) ([]sap_api_output_formatter.ToItem, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+	c.setHeaderAPIKeyAccept(req)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToToItem(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) callToItemScheduleLine(url string) ([]sap_api_output_formatter.ToItemScheduleLine, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+	c.setHeaderAPIKeyAccept(req)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToToItemScheduleLine(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) callToItemPricingElement(url string) ([]sap_api_output_formatter.ToItemPricingElement, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+	c.setHeaderAPIKeyAccept(req)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToToItemPricingElement(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) callToItemAccount(url string) ([]sap_api_output_formatter.ToItemAccount, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+	c.setHeaderAPIKeyAccept(req)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToToItemAccount(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
 func (c *SAPAPICaller) Item(purchaseOrder, purchaseOrderItem string) {
-	data, err := c.callPurchaseOrderSrvAPIRequirementItem("A_PurchaseOrderItem", purchaseOrder, purchaseOrderItem)
+	itemData, err := c.callPurchaseOrderSrvAPIRequirementItem("A_PurchaseOrderItem", purchaseOrder, purchaseOrderItem)
 	if err != nil {
 		c.log.Error(err)
 		return
 	}
-	c.log.Info(data)
+	c.log.Info(itemData)
+
+	itemScheduleLineData, err := c.callToItemScheduleLine(itemData[0].ToItemScheduleLine)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(itemScheduleLineData)
+
+	itemPricingElementData, err := c.callToItemPricingElement(itemData[0].ToItemPricingElement)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(itemPricingElementData)
+
+	itemAccountData, err := c.callToItemAccount(itemData[0].ToItemAccount)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(itemAccountData)
+	
 }
 
-func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementItem(api, purchaseOrder, purchaseOrderItem string) (*sap_api_output_formatter.Item, error) {
+func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementItem(api, purchaseOrder, purchaseOrderItem string) ([]sap_api_output_formatter.Item, error) {
 	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -124,21 +251,9 @@ func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementItem(api, purchaseOrder
 	return data, nil
 }
 
-func (c *SAPAPICaller) Account(purchaseOrder, purchaseOrderItem string) {
-	data, err := c.callPurchaseOrderSrvAPIRequirementAccount("A_PurOrdAccountAssignment", purchaseOrder, purchaseOrderItem)
-	if err != nil {
-		c.log.Error(err)
-		return
-	}
-	c.log.Info(data)
-}
-
-func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementAccount(api, purchaseOrder, purchaseOrderItem string) (*sap_api_output_formatter.Account, error) {
-	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
+func (c *SAPAPICaller) callToItemScheduleLine2(url string) ([]sap_api_output_formatter.ToItemScheduleLine, error) {
 	req, _ := http.NewRequest("GET", url, nil)
-
 	c.setHeaderAPIKeyAccept(req)
-	c.getQueryWithAccount(req, purchaseOrder, purchaseOrderItem)
 
 	resp, err := new(http.Client).Do(req)
 	if err != nil {
@@ -147,7 +262,134 @@ func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementAccount(api, purchaseOr
 	defer resp.Body.Close()
 
 	byteArray, _ := ioutil.ReadAll(resp.Body)
-	data, err := sap_api_output_formatter.ConvertToAccount(byteArray, c.log)
+	data, err := sap_api_output_formatter.ConvertToToItemScheduleLine(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) callToItemPricingElement2(url string) ([]sap_api_output_formatter.ToItemPricingElement, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+	c.setHeaderAPIKeyAccept(req)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToToItemPricingElement(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) callToItemAccount2(url string) ([]sap_api_output_formatter.ToItemAccount, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+	c.setHeaderAPIKeyAccept(req)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToToItemAccount(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) ItemScheduleLine(purchasingDocument, purchasingDocumentItem string) {
+	data, err := c.callPurchaseOrderSrvAPIRequirementItemScheduleLine("A_PurchaseOrderScheduleLine", purchasingDocument, purchasingDocumentItem)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(data)
+}
+
+func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementItemScheduleLine(api, purchasingDocument, purchasingDocumentItem string) ([]sap_api_output_formatter.ItemScheduleLine, error) {
+	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
+	req, _ := http.NewRequest("GET", url, nil)
+
+	c.setHeaderAPIKeyAccept(req)
+	c.getQueryWithItemScheduleLine(req, purchasingDocument, purchasingDocumentItem)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToItemScheduleLine(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) ItemPricingElement(purchaseOrder, purchaseOrderItem string) {
+	data, err := c.callPurchaseOrderSrvAPIRequirementItemPricingElement("A_PurOrdPricingElement", purchaseOrder, purchaseOrderItem)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(data)
+}
+
+func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementItemPricingElement(api, purchaseOrder, purchaseOrderItem string) ([]sap_api_output_formatter.ItemPricingElement, error) {
+	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
+	req, _ := http.NewRequest("GET", url, nil)
+
+	c.setHeaderAPIKeyAccept(req)
+	c.getQueryWithItemPricingElement(req, purchaseOrder, purchaseOrderItem)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToItemPricingElement(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+
+func (c *SAPAPICaller) ItemAccount(purchaseOrder, purchaseOrderItem string) {
+	data, err := c.callPurchaseOrderSrvAPIRequirementItemAccount("A_PurOrdAccountAssignment", purchaseOrder, purchaseOrderItem)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(data)
+}
+
+func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementItemAccount(api, purchaseOrder, purchaseOrderItem string) ([]sap_api_output_formatter.ItemAccount, error) {
+	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
+	req, _ := http.NewRequest("GET", url, nil)
+
+	c.setHeaderAPIKeyAccept(req)
+	c.getQueryWithItemAccount(req, purchaseOrder, purchaseOrderItem)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToItemAccount(byteArray, c.log)
 	if err != nil {
 		return nil, xerrors.Errorf("convert error: %w", err)
 	}
@@ -163,7 +405,7 @@ func (c *SAPAPICaller) PurchaseRequisition(purchaseRequisition, purchaseRequisit
 	c.log.Info(data)
 }
 
-func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementPurchaseRequisition(api, purchaseRequisition, purchaseRequisitionItem string) (*sap_api_output_formatter.Item, error) {
+func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementPurchaseRequisition(api, purchaseRequisition, purchaseRequisitionItem string) ([]sap_api_output_formatter.Item, error) {
 	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -184,37 +426,6 @@ func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementPurchaseRequisition(api
 	return data, nil
 }
 
-func (c *SAPAPICaller) ScheduleLine(purchasingDocument, purchasingDocumentItem string) {
-	data, err := c.callPurchaseOrderSrvAPIRequirementScheduleLine("A_PurchaseOrderScheduleLine", purchasingDocument, purchasingDocumentItem)
-	if err != nil {
-		c.log.Error(err)
-		return
-	}
-	c.log.Info(data)
-}
-
-func (c *SAPAPICaller) callPurchaseOrderSrvAPIRequirementScheduleLine(api, purchasingDocument, purchasingDocumentItem string) (*sap_api_output_formatter.ScheduleLine, error) {
-	url := strings.Join([]string{c.baseURL, "API_PURCHASEORDER_PROCESS_SRV", api}, "/")
-	req, _ := http.NewRequest("GET", url, nil)
-
-	c.setHeaderAPIKeyAccept(req)
-	c.getQueryWithScheduleLine(req, purchasingDocument, purchasingDocumentItem)
-
-	resp, err := new(http.Client).Do(req)
-	if err != nil {
-		return nil, xerrors.Errorf("API request error: %w", err)
-	}
-	defer resp.Body.Close()
-
-	byteArray, _ := ioutil.ReadAll(resp.Body)
-	data, err := sap_api_output_formatter.ConvertToScheduleLine(byteArray, c.log)
-	if err != nil {
-		return nil, xerrors.Errorf("convert error: %w", err)
-	}
-	return data, nil
-}
-
-
 func (c *SAPAPICaller) setHeaderAPIKeyAccept(req *http.Request) {
 	req.Header.Set("APIKey", c.apiKey)
 	req.Header.Set("Accept", "application/json")
@@ -232,7 +443,19 @@ func (c *SAPAPICaller) getQueryWithItem(req *http.Request, purchaseOrder, purcha
 	req.URL.RawQuery = params.Encode()
 }
 
-func (c *SAPAPICaller) getQueryWithAccount(req *http.Request, purchaseOrder, purchaseOrderItem string) {
+func (c *SAPAPICaller) getQueryWithItemScheduleLine(req *http.Request, purchasingDocument, purchasingDocumentItem string) {
+	params := req.URL.Query()
+	params.Add("$filter", fmt.Sprintf("PurchasingDocument eq '%s' and PurchasingDocumentItem eq '%s'", purchasingDocument, purchasingDocumentItem))
+	req.URL.RawQuery = params.Encode()
+}
+
+func (c *SAPAPICaller) getQueryWithItemPricingElement(req *http.Request, purchaseOrder, purchaseOrderItem string) {
+	params := req.URL.Query()
+	params.Add("$filter", fmt.Sprintf("PurchaseOrder eq '%s' and PurchaseOrderItem eq '%s'", purchaseOrder, purchaseOrderItem))
+	req.URL.RawQuery = params.Encode()
+}
+
+func (c *SAPAPICaller) getQueryWithItemAccount(req *http.Request, purchaseOrder, purchaseOrderItem string) {
 	params := req.URL.Query()
 	params.Add("$filter", fmt.Sprintf("PurchaseOrder eq '%s' and PurchaseOrderItem eq '%s'", purchaseOrder, purchaseOrderItem))
 	req.URL.RawQuery = params.Encode()
@@ -241,11 +464,5 @@ func (c *SAPAPICaller) getQueryWithAccount(req *http.Request, purchaseOrder, pur
 func (c *SAPAPICaller) getQueryWithPurchaseRequisition(req *http.Request, purchaseRequisition, purchaseRequisitionItem string) {
 	params := req.URL.Query()
 	params.Add("$filter", fmt.Sprintf("PurchaseRequisition eq '%s' and PurchaseRequisitionItem eq '%s'", purchaseRequisition, purchaseRequisitionItem))
-	req.URL.RawQuery = params.Encode()
-}
-
-func (c *SAPAPICaller) getQueryWithScheduleLine(req *http.Request, purchasingDocument, purchasingDocumentItem string) {
-	params := req.URL.Query()
-	params.Add("$filter", fmt.Sprintf("PurchasingDocument eq '%s' and PurchasingDocumentItem eq '%s'", purchasingDocument, purchasingDocumentItem))
 	req.URL.RawQuery = params.Encode()
 }

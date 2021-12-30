@@ -37,6 +37,11 @@ type Header struct {
 			AddressPhoneNumber          string `json:"AddressPhoneNumber"`
 			AddressRegion               string `json:"AddressRegion"`
 			AddressCountry              string `json:"AddressCountry"`
+			ToItem                      struct {
+				Deferred struct {
+					URI string `json:"uri"`
+				} `json:"__deferred"`
+			} `json:"to_PurchaseOrderItem"`
 		} `json:"results"`
 	} `json:"d"`
 }

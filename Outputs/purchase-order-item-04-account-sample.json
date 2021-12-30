@@ -1,0 +1,33 @@
+{
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-purchase-order-reads/SAP_API_Caller/caller.go#L229",
+	"function": "sap-api-integrations-purchase-order-reads/SAP_API_Caller.(*SAPAPICaller).Item",
+	"level": "INFO",
+	"message": [
+		{
+			"PurchaseOrder": "4500000028",
+			"PurchaseOrderItem": "10",
+			"AccountAssignmentNumber": "1",
+			"GLAccount": "51600000",
+			"BusinessArea": "",
+			"CostCenter": "",
+			"SalesOrder": "",
+			"SalesOrderItem": "0",
+			"SalesOrderScheduleLine": "0",
+			"MasterFixedAsset": "",
+			"FixedAsset": "",
+			"GoodsRecipientName": "",
+			"UnloadingPointName": "",
+			"ControllingArea": "A000",
+			"CostObject": "",
+			"OrderID": "1000000",
+			"ProfitCenter": "Z_LOG_PC7",
+			"WBSElement": "",
+			"ProjectNetwork": "",
+			"FunctionalArea": "YB20",
+			"TaxCode": "",
+			"CostCtrActivityType": "",
+			"IsDeleted": false
+		}
+	],
+	"time": "2021-12-30T11:06:33.206383+09:00"
+}

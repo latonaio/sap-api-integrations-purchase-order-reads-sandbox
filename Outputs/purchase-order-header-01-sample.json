@@ -1,0 +1,40 @@
+{
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-purchase-order-reads/SAP_API_Caller/caller.go#L78",
+	"function": "sap-api-integrations-purchase-order-reads/SAP_API_Caller.(*SAPAPICaller).Header",
+	"level": "INFO",
+	"message": [
+		{
+			"PurchaseOrder": "4500000028",
+			"CompanyCode": "1710",
+			"PurchaseOrderType": "NB",
+			"PurchasingProcessingStatus": "02",
+			"CreationDate": "/Date(1473638400000)/",
+			"LastChangeDateTime": "",
+			"Supplier": "17300001",
+			"Language": "EN",
+			"PaymentTerms": "0004",
+			"PurchasingOrganization": "1710",
+			"PurchasingGroup": "001",
+			"PurchaseOrderDate": "/Date(1473638400000)/",
+			"DocumentCurrency": "USD",
+			"ExchangeRate": "1.00000",
+			"ValidityStartDate": "",
+			"ValidityEndDate": "",
+			"SupplierRespSalesPersonName": "",
+			"SupplierPhoneNumber": "",
+			"SupplyingPlant": "",
+			"IncotermsClassification": "",
+			"ManualSupplierAddressID": "",
+			"AddressName": "Domestic US Supplier 10",
+			"AddressCityName": "Muncie",
+			"AddressFaxNumber": "",
+			"AddressPostalCode": "47305-2757",
+			"AddressStreetName": "S Ohio Ave",
+			"AddressPhoneNumber": "999 856 4321",
+			"AddressRegion": "IN",
+			"AddressCountry": "US",
+			"to_PurchaseOrderItem": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_PURCHASEORDER_PROCESS_SRV/A_PurchaseOrder('4500000028')/to_PurchaseOrderItem"
+		}
+	],
+	"time": "2021-12-30T10:55:15.244415+09:00"
+}

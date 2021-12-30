@@ -10,7 +10,7 @@ import (
 func main() {
 	l := logger.NewLogger()
 	fr := sap_api_input_reader.NewFileReader()
-	inoutSDC := fr.ReadSDC("./Inputs/SDC_Purchase_Order_Schedule_Line_sample.json")
+	inoutSDC := fr.ReadSDC("./Inputs/SDC_Purchase_Order_Item_Pricing_Element_sample.json")
 	caller := sap_api_caller.NewSAPAPICaller(
 		"https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/", l,
 	)
@@ -18,18 +18,19 @@ func main() {
 	accepter := inoutSDC.Accepter
 	if len(accepter) == 0 || accepter[0] == "All" {
 		accepter = []string{
-			"Header", "Item", "Account", "PurchaseRequisition",
-			"ScheduleLine",
+			"Header", "Item",
+			"ItemScheduleLine", "ItemPricingElement", "ItemAccount",
+			"PurchaseRequisition",
 		}
 	}
 
 	caller.AsyncGetPurchaseOrder(
 		inoutSDC.PurchaseOrder.PurchaseOrder,
 		inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseOrderItem,
+		inoutSDC.PurchaseOrder.PurchaseOrderItem.ItemScheduleLine.PurchasingDocument,
+		inoutSDC.PurchaseOrder.PurchaseOrderItem.ItemScheduleLine.PurchasingDocumentItem,
 		inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisition,
 		inoutSDC.PurchaseOrder.PurchaseOrderItem.PurchaseRequisitionItem,
-		inoutSDC.PurchasingDocument,
-		inoutSDC.PurchaseOrder.PurchaseOrderItem.ScheduleLine.PurchasingDocumentItem,
 		accepter,
 	)
 }
