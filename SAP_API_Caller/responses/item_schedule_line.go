@@ -1,6 +1,6 @@
 package responses
 
-type ScheduleLine struct {
+type ItemScheduleLine struct {
 	D struct {
 		Results []struct {
 			Metadata struct {

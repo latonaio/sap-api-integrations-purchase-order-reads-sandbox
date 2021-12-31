@@ -1,7 +1,0 @@
-{
-	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-purchase-order-reads/SAP_API_Caller/caller.go#L88",
-	"function": "sap-api-integrations-purchase-order-reads/SAP_API_Caller.(*SAPAPICaller).Item",
-	"level": "INFO",
-	"message": "&{PurchaseOrder:4500000011 PurchaseOrderItem:10 PurchaseOrderItemText:Frame-R14 Plant:1710 StorageLocation:171C MaterialGroup:L002 PurchasingInfoRecord:5300000354 SupplierMaterialNumber: OrderQuantity:100 PurchaseOrderQuantityUnit:PC OrderPriceUnit:PC DocumentCurrency:USD NetPriceAmount:0.10 NetPriceQuantity:1 TaxCode: OverdelivTolrtdLmtRatioInPct:0.0 UnlimitedOverdeliveryIsAllowed:false UnderdelivTolrtdLmtRatioInPct:0.0 IsCompletelyDelivered:false IsFinallyInvoiced:false PurchaseOrderItemCategory:0 AccountAssignmentCategory: GoodsReceiptIsExpected:true GoodsReceiptIsNonValuated:false InvoiceIsExpected:true InvoiceIsGoodsReceiptBased:false Customer: SupplierIsSubcontractor:false ItemNetWeight:0.400 ItemWeightUnit:KG IncotermsClassification: PurchaseRequisition: PurchaseRequisitionItem:0 RequisitionerName: Material:MZ-RM-R14-01 InternationalArticleNumber: DeliveryAddressID: DeliveryAddressName:Raw Materials DeliveryAddressPostalCode:94304 DeliveryAddressStreetName:Deer Creek DeliveryAddressCityName:Palo Alto DeliveryAddressRegion:CA DeliveryAddressCountry:US PurchasingDocumentDeletionCode:}",
-	"time": "2021-12-07T20:29:37.447514+09:00"
-}
