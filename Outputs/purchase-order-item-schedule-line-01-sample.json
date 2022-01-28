@@ -8,7 +8,7 @@
 			"PurchasingDocumentItem": "10",
 			"ScheduleLine": "1",
 			"DelivDateCategory": "1",
-			"ScheduleLineDeliveryDate": "/Date(1474502400000)/",
+			"ScheduleLineDeliveryDate": "2016-09-22T09:00:00+09:00",
 			"PurchaseOrderQuantityUnit": "PC",
 			"ScheduleLineOrderQuantity": "1",
 			"ScheduleLineDeliveryTime": "PT00H00M00S",
@@ -17,5 +17,5 @@
 			"ScheduleLineCommittedQuantity": "0"
 		}
 	],
-	"time": "2021-12-30T11:11:46.150473+09:00"
+	"time": "2022-01-28T11:13:19+09:00"
 }

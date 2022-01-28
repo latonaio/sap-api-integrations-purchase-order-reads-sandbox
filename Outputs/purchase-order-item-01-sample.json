@@ -53,5 +53,5 @@
 			"to_AccountAssignment": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_PURCHASEORDER_PROCESS_SRV/A_PurchaseOrderItem(PurchaseOrder='4500000028',PurchaseOrderItem='10')/to_AccountAssignment"
 		}
 	],
-	"time": "2021-12-30T11:06:31.980617+09:00"
+	"time": "2022-01-28T11:08:35+09:00"
 }
